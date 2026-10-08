@@ -9,10 +9,9 @@ export default {
       type: 'string',
       options: {
         list: [
-          { title: 'Entry (Long-form)', value: 'entry' },
-          { title: 'Link (Web Bookmark)', value: 'link' },
-          { title: 'Today I Learned', value: 'til' },
-          { title: 'Note (Short-form)', value: 'note' },
+          { title: 'Entry', value: 'entry' },
+          { title: 'Link', value: 'link' },
+          { title: 'Note', value: 'note' },
           { title: 'Quote', value: 'quote' },
           { title: 'Elsewhere (Travel/Physical)', value: 'elsewhere' },
         ],
