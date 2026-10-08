@@ -24,7 +24,7 @@ export default defineConfig({
             S.divider(),
             
             S.listItem()
-              .title('Entries (Long-form)')
+              .title('Entries')
               .child(
                 S.documentList()
                   .title('Entries')
@@ -64,17 +64,6 @@ export default defineConfig({
                   .filter('_type == "post" && postType == "note"')
                   .initialValueTemplates([
                     S.initialValueTemplateItem('post-type-template', { postType: 'note' })
-                  ])
-              ),
-              
-            S.listItem()
-              .title('Today I Learned')
-              .child(
-                S.documentList()
-                  .title('TILs')
-                  .filter('_type == "post" && postType == "til"')
-                  .initialValueTemplates([
-                    S.initialValueTemplateItem('post-type-template', { postType: 'til' })
                   ])
               ),
               
