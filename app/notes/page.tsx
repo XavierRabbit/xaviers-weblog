@@ -2,6 +2,7 @@ import { client } from '../../sanity.client';
 import CustomPortableText from '../components/CustomPortableText';
 import SidebarTags from '../components/SidebarTags';
 import Link from 'next/link';
+export const dynamic = 'force-dynamic';
 
 async function getNotes() {
   const query = `*[_type == "post" && postType in ["note", "til"]] | order(coalesce(publishedAt, _createdAt) desc) {

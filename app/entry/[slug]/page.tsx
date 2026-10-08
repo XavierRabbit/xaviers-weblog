@@ -1,6 +1,7 @@
 import { client } from '../../../sanity.client';
 import Link from 'next/link';
 import CustomPortableText from '../../components/CustomPortableText';
+export const dynamic = 'force-dynamic';
 
 interface Post {
   _id: string;

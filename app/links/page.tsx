@@ -2,6 +2,7 @@ import { client } from '../../sanity.client';
 import CustomPortableText from '../components/CustomPortableText';
 import SidebarTags from '../components/SidebarTags';
 import Link from 'next/link';
+export const dynamic = 'force-dynamic';
 
 async function getLinks() {
   const query = `*[_type == "post" && postType == "link"] | order(coalesce(publishedAt, _createdAt) desc) {

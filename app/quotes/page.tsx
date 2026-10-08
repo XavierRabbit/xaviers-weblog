@@ -1,6 +1,7 @@
 import { client } from '../../sanity.client';
 import CustomPortableText from '../components/CustomPortableText';
 import SidebarTags from '../components/SidebarTags';
+export const dynamic = 'force-dynamic';
 
 async function getQuotes() {
   const query = `*[_type == "post" && postType == "quote"] | order(coalesce(publishedAt, _createdAt) desc) {
