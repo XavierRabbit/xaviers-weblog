@@ -1,7 +1,6 @@
 import { client } from '../../../sanity.client';
 import Link from 'next/link';
 import CustomPortableText from '../../components/CustomPortableText';
-import SidebarTags from '../../components/SidebarTags';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +45,7 @@ export default async function EntryPage({
 
   if (!post) {
     return (
-      <main className="max-w-6xl mx-auto p-10">
+      <main className="max-w-3xl mx-auto px-4 py-12">
         <div className="text-text-light opacity-70 font-mono">Post not found.</div>
       </main>
     );
@@ -56,8 +55,8 @@ export default async function EntryPage({
   const displayType = post.postType === 'til' ? 'note' : post.postType || 'entry';
 
   return (
-    <main className="max-w-6xl mx-auto p-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12">
-      <article className="lg:col-span-8">
+    <main className="max-w-3xl mx-auto px-4 py-10 w-full">
+      <article>
         <header className="mb-10 pb-6 border-b border-surface-blue">
           <div className="flex items-center gap-3 text-xs text-accent-red font-medium mb-4 uppercase tracking-wider font-mono">
             <span>{displayType}</span>
@@ -90,7 +89,6 @@ export default async function EntryPage({
             </h1>
           )}
 
-          {/* Outbound Link Box for link and elsewhere entries */}
           {post.externalUrl && (
             <div className="mt-4 mb-2">
               <a
@@ -149,10 +147,6 @@ export default async function EntryPage({
           </Link>
         </div>
       </article>
-
-      <aside className="lg:col-span-4 hidden lg:block">
-        <SidebarTags />
-      </aside>
     </main>
   );
 }

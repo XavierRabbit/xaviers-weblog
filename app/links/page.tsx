@@ -84,7 +84,7 @@ export default async function LinksPage({
                 </div>
               )}
 
-              <CustomPortableText value={entry.content} isListMode={true} maxLength={200} />
+              <CustomPortableText value={entry.content} isListMode={true} maxLength={1999} />
 
               {entry.slug?.current && (
                 <div className="mt-4">

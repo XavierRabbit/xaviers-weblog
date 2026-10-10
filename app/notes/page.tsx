@@ -66,7 +66,7 @@ export default async function NotesPage({
                 )
               )}
 
-              <CustomPortableText value={entry.content} isListMode={true} maxLength={999} />
+              <CustomPortableText value={entry.content} isListMode={true} maxLength={1999} />
 
               {entry.slug?.current && (
                 <div className="mt-4">

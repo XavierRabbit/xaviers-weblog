@@ -93,7 +93,7 @@ export default async function Home({
                 <CustomPortableText
                   value={entry.content}
                   isListMode={!isQuote}
-                  maxLength={200}
+                  maxLength={1999}
                 />
               </div>
 
