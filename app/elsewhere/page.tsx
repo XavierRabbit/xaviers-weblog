@@ -53,19 +53,9 @@ export default async function ElsewherePage({
                 </time>
               </div>
 
-              {entry.externalUrl ? (
-                <a
-                  href={entry.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group"
-                >
-                  <h2 className="text-2xl font-bold text-text-light group-hover:text-accent-red transition-colors mb-2">
-                    {entry.title || entry.externalUrl} ↗
-                  </h2>
-                </a>
-              ) : entry.slug?.current ? (
-                <Link href={`/entry/${entry.slug.current}`}>
+              {/* Title routes internally */}
+              {entry.slug?.current ? (
+                <Link href={`/entry/${entry.slug.current}`} className="group">
                   <h2 className="text-2xl font-bold text-text-light hover:text-accent-red transition-colors mb-2">
                     {entry.title || 'Untitled'}
                   </h2>
@@ -76,6 +66,22 @@ export default async function ElsewherePage({
                     {entry.title}
                   </h2>
                 )
+              )}
+
+              {/* Dedicated source/location badge */}
+              {entry.externalUrl && (
+                <div className="mb-4">
+                  <a
+                    href={entry.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-surface-blue/20 text-accent-red hover:underline"
+                  >
+                    <span>Location / Source:</span>
+                    <span className="truncate max-w-xs sm:max-w-md">{entry.externalUrl}</span>
+                    <span>↗</span>
+                  </a>
+                </div>
               )}
 
               <CustomPortableText value={entry.content} isListMode={true} maxLength={200} />

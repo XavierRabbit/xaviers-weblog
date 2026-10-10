@@ -41,8 +41,8 @@ export default async function EntryPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const resolvedParams = await params;
+  const post = await getPost(resolvedParams.slug);
 
   if (!post) {
     return (
@@ -53,7 +53,6 @@ export default async function EntryPage({
   }
 
   const activeDate = post.publishedAt || post._createdAt;
-  const isLink = post.postType === 'link';
   const displayType = post.postType === 'til' ? 'note' : post.postType || 'entry';
 
   return (
@@ -85,23 +84,27 @@ export default async function EntryPage({
             )}
           </div>
 
-          {isLink && post.externalUrl ? (
-            <a
-              href={post.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group"
-            >
-              <h1 className="text-4xl md:text-5xl font-bold text-text-light group-hover:text-accent-red transition-colors leading-tight mb-6">
-                {post.title || post.externalUrl} ↗
-              </h1>
-            </a>
-          ) : (
-            post.title && (
-              <h1 className="text-4xl md:text-5xl font-bold text-text-light leading-tight mb-6">
-                {post.title}
-              </h1>
-            )
+          {post.title && (
+            <h1 className="text-4xl md:text-5xl font-bold text-text-light leading-tight mb-4">
+              {post.title}
+            </h1>
+          )}
+
+          {/* Outbound Link Box for link and elsewhere entries */}
+          {post.externalUrl && (
+            <div className="mt-4 mb-2">
+              <a
+                href={post.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-surface-blue bg-surface-blue/20 text-sm font-mono text-accent-red hover:bg-surface-blue/40 transition-colors"
+              >
+                <span>External Link ↗</span>
+                <span className="text-text-light/50 truncate max-w-xs sm:max-w-md">
+                  ({post.externalUrl})
+                </span>
+              </a>
+            </div>
           )}
         </header>
 

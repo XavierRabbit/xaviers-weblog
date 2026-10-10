@@ -44,7 +44,6 @@ export default async function Home({
       <section className="lg:col-span-8 space-y-12">
         {items.map((entry: any) => {
           const isQuote = entry.postType === 'quote';
-          const isLink = entry.postType === 'link' || entry.postType === 'elsewhere';
           const displayType = entry.postType === 'til' ? 'note' : entry.postType || 'entry';
 
           return (
@@ -59,29 +58,35 @@ export default async function Home({
                 </span>
               </div>
 
-              {isLink && entry.externalUrl ? (
-                <a
-                  href={entry.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group"
-                >
-                  <h2 className="text-2xl font-bold text-text-light group-hover:text-accent-red transition-colors mb-4">
-                    {entry.title || entry.externalUrl} ↗
-                  </h2>
-                </a>
-              ) : entry.slug?.current ? (
+              {/* Title links to internal entry page */}
+              {entry.slug?.current ? (
                 <Link href={`/entry/${entry.slug.current}`} className="group">
-                  <h2 className="text-2xl font-bold text-text-light group-hover:text-accent-red transition-colors mb-4">
+                  <h2 className="text-2xl font-bold text-text-light group-hover:text-accent-red transition-colors mb-2">
                     {entry.title || 'Untitled'}
                   </h2>
                 </Link>
               ) : (
                 entry.title && (
-                  <h2 className="text-2xl font-bold text-text-light mb-4">
+                  <h2 className="text-2xl font-bold text-text-light mb-2">
                     {entry.title}
                   </h2>
                 )
+              )}
+
+              {/* External URL badge if available */}
+              {entry.externalUrl && (
+                <div className="mb-4">
+                  <a
+                    href={entry.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-surface-blue/20 text-accent-red hover:underline"
+                  >
+                    <span>Visit Source:</span>
+                    <span className="truncate max-w-xs sm:max-w-md">{entry.externalUrl}</span>
+                    <span>↗</span>
+                  </a>
+                </div>
               )}
 
               <div className={isQuote ? 'border-l-2 border-accent-red pl-4 italic text-lg' : ''}>
