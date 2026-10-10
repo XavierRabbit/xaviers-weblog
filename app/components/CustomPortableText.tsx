@@ -15,22 +15,31 @@ function getSanityFileUrl(ref: string) {
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
 
+// Helper: extracts concatenated plain text across all block paragraphs
+function getConcatenatedText(value: any[]): string {
+  if (!Array.isArray(value)) return '';
+  return value
+    .filter((block: any) => block._type === 'block')
+    .map((block: any) =>
+      (block.children || [])
+        .map((child: any) => child.text || '')
+        .join('')
+        .trim()
+    )
+    .filter(Boolean)
+    .join('\n\n');
+}
+
 export function isContentTruncated(value: any, maxLength = DEFAULT_PREVIEW_LENGTH): boolean {
   if (!value || !Array.isArray(value)) return false;
 
-  // Has media embeds, images, or multiple blocks
-  const hasExtraBlocks = value.length > 1;
+  // True if there is non-block media (images, embeds, videos)
   const hasMedia = value.some((b: any) => b._type !== 'block');
+  if (hasMedia) return true;
 
-  const textBlocks = value.filter((block: any) => block._type === 'block');
-  const rawText = textBlocks[0]?.children
-    ?.map((child: any) => child.text || '')
-    .join('')
-    .trim() || '';
-
-  const exceedsLength = rawText.length > maxLength;
-
-  return hasExtraBlocks || hasMedia || exceedsLength;
+  // Check total character count across all paragraphs
+  const allText = getConcatenatedText(value);
+  return allText.length > maxLength;
 }
 
 interface CustomPortableTextProps {
@@ -48,29 +57,27 @@ export default function CustomPortableText({
 
   // 1. In Feed / List Mode
   if (isListMode) {
-    const textBlocks = value.filter((block: any) => block._type === 'block');
-    if (textBlocks.length === 0) return null;
+    const allText = getConcatenatedText(value);
+    if (!allText) return null;
 
-    const rawText = textBlocks[0]?.children
-      ?.map((child: any) => child.text || '')
-      .join('')
-      .trim() || '';
+    const hasMedia = value.some((b: any) => b._type !== 'block');
+    const exceedsLength = allText.length > maxLength;
+    const isTruncated = exceedsLength || hasMedia;
 
-    const needsEllipsis = rawText.length > maxLength || value.length > 1;
-    const previewText = rawText.length > maxLength
-      ? `${rawText.substring(0, maxLength).trim()}...`
-      : needsEllipsis
-        ? `${rawText}...`
-        : rawText;
+    const previewText = exceedsLength
+      ? `${allText.substring(0, maxLength).trim()}...`
+      : isTruncated
+        ? `${allText}...`
+        : allText;
 
     return (
-      <div className="text-text-light/80 text-base leading-relaxed">
+      <div className="text-text-light/80 text-base leading-relaxed whitespace-pre-line">
         <p>{previewText}</p>
       </div>
     );
   }
 
-  // 2. Full Reading Mode
+  // 2. Full Reading Mode (/entry/[slug])
   const myPortableTextComponents: PortableTextComponents = {
     block: {
       normal: ({ children }) => <p className="leading-relaxed mb-4">{children}</p>,
