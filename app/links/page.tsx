@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination';
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 10;
-const PREVIEW_LENGTH = 5000;
+const PREVIEW_LENGTH = 3000;
 
 async function getLinks(page: number) {
   const start = (page - 1) * PAGE_SIZE;
