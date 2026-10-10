@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { client } from '../sanity.client';
-import CustomPortableText from './components/CustomPortableText';
+import CustomPortableText, { isContentTruncated } from './components/CustomPortableText';
 import SidebarTags from './components/SidebarTags';
 import Pagination from './components/Pagination';
 
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 10;
+const PREVIEW_LENGTH = 5000;
 
 async function getUnifiedEntries(page: number) {
   const start = (page - 1) * PAGE_SIZE;
@@ -45,6 +46,10 @@ export default async function Home({
         {items.map((entry: any) => {
           const isQuote = entry.postType === 'quote';
           const displayType = entry.postType === 'til' ? 'note' : entry.postType || 'entry';
+          const needsReadMore =
+            entry.slug?.current &&
+            !isQuote &&
+            isContentTruncated(entry.content, PREVIEW_LENGTH);
 
           return (
             <article key={entry._id} className="border-b border-surface-blue pb-8">
@@ -58,7 +63,6 @@ export default async function Home({
                 </span>
               </div>
 
-              {/* Title links to internal entry page */}
               {entry.slug?.current ? (
                 <Link href={`/entry/${entry.slug.current}`} className="group">
                   <h2 className="text-2xl font-bold text-text-light group-hover:text-accent-red transition-colors mb-2">
@@ -73,7 +77,6 @@ export default async function Home({
                 )
               )}
 
-              {/* External URL badge if available */}
               {entry.externalUrl && (
                 <div className="mb-4">
                   <a
@@ -93,17 +96,18 @@ export default async function Home({
                 <CustomPortableText
                   value={entry.content}
                   isListMode={!isQuote}
-                  maxLength={1999}
+                  maxLength={PREVIEW_LENGTH}
                 />
               </div>
 
-              {entry.slug?.current && !isQuote && (
+              {/* Only shows if there is genuinely more text or media to read */}
+              {needsReadMore && (
                 <div className="mt-4">
                   <Link
                     href={`/entry/${entry.slug.current}`}
                     className="text-sm font-medium text-accent-red hover:underline inline-flex items-center gap-1 font-mono"
                   >
-                    Read full entry <span>→</span>
+                    Read full article <span>→</span>
                   </Link>
                 </div>
               )}

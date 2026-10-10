@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { client } from '../../sanity.client';
-import CustomPortableText from '../components/CustomPortableText';
+import CustomPortableText, { isContentTruncated } from '../components/CustomPortableText';
 import SidebarTags from '../components/SidebarTags';
 import Pagination from '../components/Pagination';
 
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 10;
+const PREVIEW_LENGTH = 5000;
 
 async function getNotes(page: number) {
   const start = (page - 1) * PAGE_SIZE;
@@ -44,42 +45,52 @@ export default async function NotesPage({
         {items.length === 0 ? (
           <p className="text-text-light opacity-50 font-mono">No notes found.</p>
         ) : (
-          items.map((entry: any) => (
-            <article key={entry._id} className="border-b border-surface-blue pb-8">
-              <div className="flex items-center gap-3 text-xs text-text-light opacity-50 mb-2 font-mono">
-                <time>
-                  {new Date(entry.publishedAt || entry._createdAt).toLocaleDateString()}
-                </time>
-              </div>
+          items.map((entry: any) => {
+            const needsReadMore =
+              entry.slug?.current &&
+              isContentTruncated(entry.content, PREVIEW_LENGTH);
 
-              {entry.slug?.current ? (
-                <Link href={`/entry/${entry.slug.current}`}>
-                  <h2 className="text-2xl font-bold text-text-light hover:text-accent-red transition-colors mb-4">
-                    {entry.title || 'Untitled Note'}
-                  </h2>
-                </Link>
-              ) : (
-                entry.title && (
-                  <h2 className="text-2xl font-bold text-text-light mb-4">
-                    {entry.title}
-                  </h2>
-                )
-              )}
-
-              <CustomPortableText value={entry.content} isListMode={true} maxLength={1999} />
-
-              {entry.slug?.current && (
-                <div className="mt-4">
-                  <Link
-                    href={`/entry/${entry.slug.current}`}
-                    className="text-sm font-medium text-accent-red hover:underline inline-flex items-center gap-1 font-mono"
-                  >
-                    Read full entry <span>→</span>
-                  </Link>
+            return (
+              <article key={entry._id} className="border-b border-surface-blue pb-8">
+                <div className="flex items-center gap-3 text-xs text-text-light opacity-50 mb-2 font-mono">
+                  <time>
+                    {new Date(entry.publishedAt || entry._createdAt).toLocaleDateString()}
+                  </time>
                 </div>
-              )}
-            </article>
-          ))
+
+                {entry.slug?.current ? (
+                  <Link href={`/entry/${entry.slug.current}`}>
+                    <h2 className="text-2xl font-bold text-text-light hover:text-accent-red transition-colors mb-4">
+                      {entry.title || 'Untitled Note'}
+                    </h2>
+                  </Link>
+                ) : (
+                  entry.title && (
+                    <h2 className="text-2xl font-bold text-text-light mb-4">
+                      {entry.title}
+                    </h2>
+                  )
+                )}
+
+                <CustomPortableText
+                  value={entry.content}
+                  isListMode={true}
+                  maxLength={PREVIEW_LENGTH}
+                />
+
+                {needsReadMore && (
+                  <div className="mt-4">
+                    <Link
+                      href={`/entry/${entry.slug.current}`}
+                      className="text-sm font-medium text-accent-red hover:underline inline-flex items-center gap-1 font-mono"
+                    >
+                      Read full article <span>→</span>
+                    </Link>
+                  </div>
+                )}
+              </article>
+            );
+          })
         )}
 
         <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/notes" />

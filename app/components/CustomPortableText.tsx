@@ -13,6 +13,26 @@ function getSanityFileUrl(ref: string) {
   return `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}.${extension}`;
 }
 
+export const DEFAULT_PREVIEW_LENGTH = 200;
+
+export function isContentTruncated(value: any, maxLength = DEFAULT_PREVIEW_LENGTH): boolean {
+  if (!value || !Array.isArray(value)) return false;
+
+  // Has media embeds, images, or multiple blocks
+  const hasExtraBlocks = value.length > 1;
+  const hasMedia = value.some((b: any) => b._type !== 'block');
+
+  const textBlocks = value.filter((block: any) => block._type === 'block');
+  const rawText = textBlocks[0]?.children
+    ?.map((child: any) => child.text || '')
+    .join('')
+    .trim() || '';
+
+  const exceedsLength = rawText.length > maxLength;
+
+  return hasExtraBlocks || hasMedia || exceedsLength;
+}
+
 interface CustomPortableTextProps {
   value: any;
   isListMode?: boolean;
@@ -22,11 +42,11 @@ interface CustomPortableTextProps {
 export default function CustomPortableText({
   value,
   isListMode = false,
-  maxLength = 999,
+  maxLength = DEFAULT_PREVIEW_LENGTH,
 }: CustomPortableTextProps) {
   if (!value || !Array.isArray(value)) return null;
 
-  // 1. In Feed / List Mode: preview text only, truncated with ellipsis
+  // 1. In Feed / List Mode
   if (isListMode) {
     const textBlocks = value.filter((block: any) => block._type === 'block');
     if (textBlocks.length === 0) return null;
@@ -36,9 +56,11 @@ export default function CustomPortableText({
       .join('')
       .trim() || '';
 
-    const previewText =
-      rawText.length > maxLength
-        ? `${rawText.substring(0, maxLength).trim()}...`
+    const needsEllipsis = rawText.length > maxLength || value.length > 1;
+    const previewText = rawText.length > maxLength
+      ? `${rawText.substring(0, maxLength).trim()}...`
+      : needsEllipsis
+        ? `${rawText}...`
         : rawText;
 
     return (
@@ -48,7 +70,7 @@ export default function CustomPortableText({
     );
   }
 
-  // 2. In Full Reading Mode (/entry/[slug]): render full text + media components
+  // 2. Full Reading Mode
   const myPortableTextComponents: PortableTextComponents = {
     block: {
       normal: ({ children }) => <p className="leading-relaxed mb-4">{children}</p>,
