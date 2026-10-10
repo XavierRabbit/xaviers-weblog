@@ -22,7 +22,7 @@ interface CustomPortableTextProps {
 export default function CustomPortableText({
   value,
   isListMode = false,
-  maxLength = 220,
+  maxLength = 999,
 }: CustomPortableTextProps) {
   if (!value || !Array.isArray(value)) return null;
 

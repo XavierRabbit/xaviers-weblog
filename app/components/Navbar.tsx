@@ -11,10 +11,11 @@ export default function Navbar() {
     { name: 'Links', path: '/links' },
     { name: 'Quotes', path: '/quotes' },
     { name: 'Notes', path: '/notes' },
+    { name: 'Elsewhere', path: '/elsewhere' },
   ];
 
   return (
-    <nav className="flex items-center gap-2 overflow-x-auto">
+    <nav className="flex items-center gap-2 overflow-x-auto pb-1">
       {navItems.map((item) => {
         const isActive =
           item.path === '/'
